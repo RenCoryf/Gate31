@@ -5,8 +5,9 @@ from enum import Enum
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing_extensions import Dict
-
+from matcher.app.server import router as match_cloth_router
 app = FastAPI()
+app.include_router(match_cloth_router)
 
 
 class Category(Enum):

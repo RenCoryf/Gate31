@@ -1,11 +1,11 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import APIRouter, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
 from pathlib import Path
 from PIL import Image
 import torch
 from matcher.app.embedder import get_embedding
 
-app = FastAPI()
+router = APIRouter()
 
 # Загружаем эмбеддинги каталога один раз при старте сервера
 embeddings_file = Path(__file__).resolve().parent.parent / "embeddings/catalog_embeddings.pt"
@@ -16,7 +16,7 @@ data = torch.load(embeddings_file)
 catalog_embeddings = data["embeddings"]
 catalog_filenames = data["filenames"]
 
-@app.post("/match")
+@router.post("/match")
 async def match(file: UploadFile = File(...)):
     # Проверка формата
     if not file.filename.lower().endswith((".jpg", ".jpeg", ".png")):
