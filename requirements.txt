@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pillow
+numpy
+scipy
+python-multipart
+git+https://github.com/openai/CLIP.git
+
