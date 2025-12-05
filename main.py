@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 from fastapi import FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing_extensions import Dict
 
@@ -14,6 +15,15 @@ from pic_giver import get_picture
 
 app = FastAPI()
 app.include_router(match_cloth_router)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class Category(Enum):
