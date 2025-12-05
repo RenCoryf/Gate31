@@ -1,6 +1,7 @@
 import os
 
 def get_picture(pic_id: int)->bytes:
+    os.chdir("catalog")
     files = [f for f in os.listdir('.') if f.lower().endswith('.jpg')]
     files.sort()  # Сортируем, чтобы порядок был предсказуемый
 
@@ -10,4 +11,7 @@ def get_picture(pic_id: int)->bytes:
     filename = files[pic_id - 1]
     with open(filename, 'rb') as f:
         return f.read()
+
+
+print(get_picture(2))
 
