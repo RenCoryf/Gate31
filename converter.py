@@ -1,84 +1,10 @@
-import base64
 import json
 from dataclasses import asdict, dataclass
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List
 
-from fastapi import FastAPI, Query
-from pydantic import BaseModel
-from typing_extensions import Dict
-
-from matcher.app.server import router as match_cloth_router
-from pic_giver import get_picture
-
-app = FastAPI()
-app.include_router(match_cloth_router)
-
-
-class Category(Enum):
-    UpperClothing = "верхняя одежда"
-    Jacket = "жакет"
-    Dress = "платье"
-    T_shirts = "футболки"
-    Hoodies = "худи"
-    Bomber = "бомбер"
-
-
-class Material(Enum):
-    Cotton = "хлопок"
-    Elastan = "эластан"
-    Polyester = "полиэстер"
-    Wool = "шерсть"
-    Skin = "кожа"
-
-
-class Style(Enum):
-    Casual = "повседрневный"
-    Basic = "базовый"
-    Evening = "вечерний"
-    Office = "офисный"
-
-
-class Rating(Enum):
-    Three = "3"
-    Four = "4"
-    Five = "5"
-    Review = "отзывы"
-
-
-class Size(Enum):
-    XS = "XS"
-    S = "S"
-    M = "M"
-    L = "L"
-    XL = "XL"
-
-
-@dataclass
-class MiniCard:
-    id: int
-    name: str
-    price: float
-    size: set[Size]
-    category: Category
-    material: Material
-    style: Style
-    rating: Rating
-    description: str
-    color: int
-    image: str
-
-
-class Filters(BaseModel):
-    category: set[Category] | None = None
-    size: set[Size] | None = None
-    color: set[int] | None = None
-    material: set[Material] | None = None
-    style: set[Style] | None = None
-    rating: set[Rating] | None = None
-    starting_price: float | None = None
-    ending_price: float | None = None
+from main import Category, Material, MiniCard, Rating, Size, Style
 
 
 # 🔥 ИНТЕРАКТИВНЫЙ РЕДАКТОР
@@ -208,82 +134,15 @@ def save_json(minicards: List[MiniCard]):
 
 def load_json() -> List[MiniCard]:
     try:
-        with open(Path(__file__).parent / "mc.json", "r", encoding="utf-8") as f:
+        with open("minicards.json", "r", encoding="utf-8") as f:
             data = json.load(f)
-            print("Загружено из mc.json")
             return [dict_to_minicard(d) for d in data]
     except FileNotFoundError:
-        print("Файл mc.json не найден")
         return []
 
 
-# 🚀 ЗАПУС
-
-
-mini_cards: list[MiniCard] = load_json()
-
-
-@app.get("/")
-async def root():
-    print("HHHHHHHHHHHHHHHHHHH")
-
-
-@app.post("/get_minicards")
-async def get_minicards(filters: Filters):
-    mini_cards: list[MiniCard] = load_json()
-    print(filters.color)
-    print("GGGGGGGGGGGGGGGGGGGGGGGG")
-    if (
-        not filters.category
-        and not filters.size
-        and not filters.color
-        and not filters.material
-        and not filters.style
-        and not filters.rating
-        and not filters.starting_price
-        and not filters.ending_price
-    ):
-        print("GGGGGGGGGGGGGGGGGGGGGGGG")
-        print(mini_cards)
-        for c in mini_cards:
-            c.image = base64.b64encode(get_picture(c.id)).decode("utf-8")
-        return list(mini_cards)
-    else:
-        cards: list[MiniCard] = []
-        for card in mini_cards:
-            if filters.category and card.category not in filters.category:
-                continue
-            if filters.size and card.size not in filters.size:
-                continue
-            if filters.color and card.color not in filters.color:
-                print(card)
-                continue
-            if filters.material and card.material not in filters.material:
-                continue
-            if filters.style and card.style not in filters.style:
-                continue
-            if filters.rating and card.rating not in filters.rating:
-                continue
-            if filters.starting_price and card.price < filters.starting_price:
-                continue
-            if filters.ending_price and card.price > filters.ending_price:
-                continue
-            cards.append(card)
-            for c in cards:
-                c.image = base64.b64encode(get_picture(c.id)).decode("utf-8")
-
-            return cards
-
-
-def get_id(id: int):
-    mini_cards: list[MiniCard] = load_json()
-    for card in mini_cards:
-        if card.id == id:
-            card.image = base64.b64encode(get_picture(card.id)).decode("utf-8")
-            return card
-    return None
-
-
-@app.get("/by_id")
-async def get_by_id(id: int):
-    return get_id(id)
+# 🚀 ЗАПУСК
+if __name__ == "__main__":
+    cards = interactive_editor()
+    print(f"✅ Готово! {len(cards)} карточек.")
+    print(cards)
