@@ -1,3 +1,4 @@
+import base64
 from dataclasses import dataclass
 from enum import Enum
 
@@ -59,6 +60,7 @@ class MiniCard:
     rating: Rating
     description: str
     color: int
+    image: str
 
 
 class Filters(BaseModel):
@@ -77,6 +79,11 @@ mini_cards: Dict[int, MiniCard] = {}
 
 @app.get("/")
 async def root():
+    with open("gate31_pics/pic_2.jpg", "rb") as f:
+        image_data = f.read()
+        image_data = base64.b64encode(image_data).decode("utf-8")
+        print(image_data)
+        print("HHHHHHHHHHHHHHHHHHH")
     mini_cards[1] = MiniCard(
         id=1,
         category=Category.Hoodies,
@@ -88,6 +95,7 @@ async def root():
         description="This is a description",
         price=100.0,
         name="Hoodie Red",
+        image=image_data,
     )
 
     mini_cards[2] = MiniCard(
@@ -101,10 +109,11 @@ async def root():
         description="This is another description",
         price=150.0,
         name="Hoodie Blue",
+        image=image_data,
     )
 
-    print(mini_cards[1].name)
-    print(mini_cards[2].name)
+    print(mini_cards[1])
+    print(mini_cards[2])
 
 
 @app.post("/get_minicards")

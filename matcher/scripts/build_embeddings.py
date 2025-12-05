@@ -3,7 +3,7 @@ from PIL import Image
 from pathlib import Path
 from matcher.app.embedder import get_embedding
 
-catalog_dir = Path(__file__).resolve().parent.parent / "catalog"
+catalog_dir = Path(__file__).resolve().parent.parent.parent / "catalog"
 embeddings_dir = Path(__file__).resolve().parent.parent / "embeddings"
 embeddings_dir.mkdir(exist_ok=True)
 
